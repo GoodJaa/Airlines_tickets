@@ -1,13 +1,25 @@
 <template>
   <div class="priority-filter-wrapper">
-    <div class="priority-filter__item" :class="{'priority-filter__item--active': filter.active}" @click="[activatedFilter(filter)]" v-for="filter in filters">
+    <div class="priority-filter__item"
+         :class="{'priority-filter__item--active': filter.isActive}"
+         @click="[activatedFilter(filter)]"
+         :key="filter.id"
+         v-for="filter in filters">
       {{ filter.text }}
     </div>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent} from "vue";
+
+type IPriorityFilter = {
+  id: number;
+  text: string;
+  isActive: boolean
+}
+
+export default defineComponent({
   name: "PriorityFilter",
   data() {
     return {
@@ -15,27 +27,27 @@ export default {
         {
           id: 1,
           text: 'САМЫЙ ДЕШЁВЫЙ',
-          active: true,
+          isActive: true,
         },
         {
           id: 2,
           text: 'САМЫЙ БЫСТРЫЙ',
-          active: false,
+          isActive: false,
         },
         {
           id: 3,
           text: 'ОПТИМАЛЬНЫЙ',
-          active: false,
+          isActive: false,
         }
-      ]
+      ] as IPriorityFilter[]
     }
   },
   methods: {
-    activatedFilter(filter) {
-      this.filters.forEach(item => item.active = filter.id === item.id ? true : false)
+    activatedFilter(filter: IPriorityFilter): void {
+      this.filters.forEach(item => item.isActive = filter.id === item.id ? true : false)
     }
   }
-};
+});
 </script>
 
 <style scoped lang="scss">
@@ -60,7 +72,7 @@ export default {
         border-left: 1px solid #DFE5EC;
       }
       &:nth-child(2) {
-        broder: none;
+        border: none;
       }
       &.priority-filter__item--active {
         &:nth-child(1) {

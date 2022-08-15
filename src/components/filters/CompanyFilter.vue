@@ -1,16 +1,28 @@
 <template>
   <div class="company-filter-wrapper">
     <div class="company-filter-header">КОМПАНИЯ</div>
-    <label class="radio-wrapper" v-for="item in filters">
-      <input class="radio" type="radio" :value="item.id" v-model="checkedItem"/>
+    <label class="radio-wrapper"
+           :key="filter.id"
+           v-for="filter in filters">
+      <input class="radio"
+             type="radio"
+             :value="filter.id"
+             v-model="checkedFilter"/>
       <div class="checkmark"></div>
-      <div>{{item.name}}</div>
+      <div>{{filter.name}}</div>
     </label>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import {defineComponent} from "vue";
+
+type ICompanyFilter = {
+  id: number;
+  name: string;
+}
+
+export default defineComponent({
   name: "CompanyFilter",
   data() {
     return {
@@ -27,12 +39,11 @@ export default {
           id: 3,
           name: 'XiamenAir'
         }
-      ],
-      value: '',
-      checkedItem: ''
+      ] as ICompanyFilter[],
+      checkedFilter: null
     }
   },
-};
+});
 </script>
 
 <style scoped lang="scss">

@@ -1,36 +1,47 @@
-<script>
+<script lang="ts">
 import LogoIcon from '@/components/icons/LogoIcon.vue';
 import TicketCard from '@/components/TicketCard.vue';
 import PriorityFilter from "@/components/filters/PriorityFilter.vue";
 import TransferAmountFilter from "@/components/filters/TransferAmountFilter.vue";
 import CompanyFilter from "@/components/filters/CompanyFilter.vue";
 import ticketStubFile from '@/stubs/ticketsData.json';
+import { defineComponent } from "vue";
 
-export default {
+interface ITicket {
+  id: number;
+  price: string;
+  route: string;
+  time: string;
+  duration: string;
+  transfer: string[];
+}
+
+export default defineComponent({
   name: 'TicketsFilterView',
   data() {
     return {
-      ticketCardsData: [],
+      ticketCardsData: [] as ITicket[],
       loader: false
-    }
+    };
   },
+
   mounted() {
     try {
       this.loader = true;
       this.ticketCardsData = this.getTickets();
-      console.log(this.ticketCardsData)
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
       this.loader = false;
     }
   },
+
   methods: {
-    getTickets() {
-      const tickets = ticketStubFile?.tickets;
-      return tickets;
+    getTickets(): ITicket[] {
+      return ticketStubFile?.tickets;
     }
   },
+
   components: {
     LogoIcon,
     TicketCard,
@@ -38,7 +49,7 @@ export default {
     TransferAmountFilter,
     CompanyFilter
   }
-}
+});
 </script>
 
 <template>

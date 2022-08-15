@@ -21,31 +21,41 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
+import type { PropType } from "vue";
 import CardProperty from '@/components/CardProperty.vue';
 import S7AirlinesIcon from '@/components/icons/S7AirlinesIcon.vue';
 
-export default {
+interface ITicketCardData {
+  id: number;
+  price: string;
+  route: string;
+  time: string;
+  duration: string;
+  transfer: string[];
+}
+
+export default defineComponent({
   name: "TicketCard",
   props: {
     cardData: {
-      type: Object
+      type: Object as PropType<ITicketCardData>,
+      required: true
     }
   },
   data() {
     return {
-      ticketCardData: {}
+      ticketCardData: {} as ITicketCardData
     }
   },
   mounted() {
-    console.log(this.cardData);
     this.ticketCardData = { ...this.cardData };
   },
   computed: {
-    getTransferCount() {
+    getTransferCount(): string {
       const length = this.ticketCardData.transfer?.length || '';
       let transferString;
-      console.log(length)
       if (length) {
         if (length === 1) {
           transferString = 'ПЕРЕСАДКА';
@@ -64,7 +74,7 @@ export default {
     CardProperty,
     S7AirlinesIcon
   }
-};
+});
 </script>
 
 <style scoped lang="scss">

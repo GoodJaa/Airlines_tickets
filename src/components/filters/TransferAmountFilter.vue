@@ -1,50 +1,58 @@
 <template>
   <div class="transfer-amount-filter-wrapper">
     <div class="transfer-amount-filter-header">КОЛИЧЕСТВО ПЕРЕСАДОК</div>
-    <label class="checkbox-wrapper" v-for="item in filters">
-      <input class="checkbox" type="checkbox" :checked="isChecked" :value="item.name"/>
+    <label class="checkbox-wrapper"
+           v-for="filter in filters">
+      <input class="checkbox"
+             type="checkbox"
+             :checked="filter.isChecked"
+             v-model="checkedFilters"
+             :value="filter.id"/>
       <div class="checkmark"></div>
-      <div>{{item.name}}</div>
+      <div>{{filter.name}}</div>
     </label>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from "vue";
+
+type ITransferAmountFilter = {
+  id: number;
+  name: string;
+  isChecked: boolean;
+}
+
+export default defineComponent({
   name: "TransferAmountFilter",
   data() {
     return {
       filters: [
         {
           id: 1,
-          name: 'Без пересадок'
+          name: 'Без пересадок',
+          isChecked: false
         },
         {
           id: 2,
-          name: '1 пересадка'
+          name: '1 пересадка',
+          isChecked: false
         },
         {
           id: 3,
-          name: '2 пересадки'
+          name: '2 пересадки',
+          isChecked: false
         },
         {
           id: 4,
-          name: '3 пересадки'
+          name: '3 пересадки',
+          isChecked: false
         }
-      ],
-      value: "",
-      modelValue: [],
-    }
-  },
-  computed: {
-    isChecked() {
-      if (this.modelValue instanceof Array) {
-        return this.modelValue.includes(this.value)
-      }
-      return this.modelValue === true
+      ] as ITransferAmountFilter[],
+      checkedFilters: [],
     }
   }
-};
+});
 </script>
 
 <style scoped lang="scss">
