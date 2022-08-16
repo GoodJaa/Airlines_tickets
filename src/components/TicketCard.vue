@@ -1,21 +1,21 @@
 <template>
-  <div class="ticket-card-wrapper">
+  <div v-if="Object.keys(ticketCardData).length" class="ticket-card-wrapper">
     <div class="ticket-card-header">
-      <div class="ticket-card__price">{{ticketCardData.price}}</div>
+      <div class="ticket-card__price">{{ticketCardData.price}} Р</div>
       <S7AirlinesIcon/>
     </div>
     <div class="ticket-card-footer">
       <CardProperty>
-        <template #header>{{ticketCardData.route}}</template>
-        <template #footer>{{ticketCardData.time}}</template>
+        <template #header>{{`${ticketCardData.info.origin} - ${ticketCardData.info.destination}`}}</template>
+        <template #footer>{{getFormatRouteTime}}</template>
       </CardProperty>
       <CardProperty>
         <template #header>В ПУТИ</template>
-        <template #footer>{{ticketCardData.duration}}</template>
+        <template #footer>{{getFormatDuration}}</template>
       </CardProperty>
       <CardProperty>
         <template #header>{{getTransferCount}}</template>
-        <template v-if="ticketCardData.transfer?.length" #footer>{{ticketCardData.transfer?.join(', ')}}</template>
+        <template #footer>{{ticketCardData.info.stops?.join(', ')}}</template>
       </CardProperty>
     </div>
   </div>
@@ -27,26 +27,32 @@ import type { PropType } from "vue";
 import CardProperty from '@/components/CardProperty.vue';
 import S7AirlinesIcon from '@/components/icons/S7AirlinesIcon.vue';
 
-interface ITicketCardData {
-  id: number;
+type ITicketInfo = {
+  dateEnd: number;
+  dateStart: number;
+  destination: string;
+  duration: number;
+  origin: string;
+  stops: string[];
+}
+interface ITicket {
+  companyId: string;
+  id: string;
+  info: ITicketInfo;
   price: string;
-  route: string;
-  time: string;
-  duration: string;
-  transfer: string[];
 }
 
 export default defineComponent({
   name: "TicketCard",
   props: {
     cardData: {
-      type: Object as PropType<ITicketCardData>,
+      type: Object as PropType<ITicket>,
       required: true
     }
   },
   data() {
     return {
-      ticketCardData: {} as ITicketCardData
+      ticketCardData: {} as ITicket
     }
   },
   mounted() {
@@ -54,7 +60,7 @@ export default defineComponent({
   },
   computed: {
     getTransferCount(): string {
-      const length = this.ticketCardData.transfer?.length || '';
+      const length = this.ticketCardData.info.stops?.length || null;
       let transferString;
       if (length) {
         if (length === 1) {
@@ -67,7 +73,30 @@ export default defineComponent({
       } else {
         transferString = 'БЕЗ ПЕРЕСАДОК';
       }
-      return `${length} ${transferString}`;
+      return `${length ? length : ''} ${transferString}`;
+    },
+    getFormatRouteTime(): string {
+      if (this.ticketCardData?.info) {
+        const start: {[key: string]: number | string} = this.formatTime(this.ticketCardData.info?.dateStart);
+        const end: {[key: string]: number | string} = this.formatTime(this.ticketCardData.info?.dateEnd);
+        start.hours = start.hours < 10 ? `0${start.hours}` : start.hours;
+        end.hours = end.hours < 10 ? `0${end.hours}` : end.hours;
+        return `${start.hours}:${start.mins} - ${end.hours}:${end.mins}`
+      }
+      return ''
+    },
+    getFormatDuration(): string {
+      const date: {[key: string]: number | string} =  this.formatTime(this.ticketCardData.info?.duration);
+      return `${date.hours}ч ${date.mins}м`
+    }
+  },
+  methods: {
+    formatTime(value: number): {[key: string]: number} {
+      const date: Date = new Date(value)
+      const hours: number = date.getUTCHours();
+      const mins: number = date.getUTCMinutes();
+
+      return {hours, mins}
     }
   },
   components: {
@@ -82,7 +111,7 @@ export default defineComponent({
     background-color: #fff;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    margin: 20px 0;
+    margin-bottom: 20px;
     padding: 20px;
     length: 100%;
 

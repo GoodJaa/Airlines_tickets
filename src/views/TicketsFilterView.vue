@@ -4,16 +4,23 @@ import TicketCard from '@/components/TicketCard.vue';
 import PriorityFilter from "@/components/filters/PriorityFilter.vue";
 import TransferAmountFilter from "@/components/filters/TransferAmountFilter.vue";
 import CompanyFilter from "@/components/filters/CompanyFilter.vue";
-import ticketStubFile from '@/stubs/ticketsData.json';
+import DatesFilter from "@/components/filters/DatesFilter.vue";
+import RoutesFilter from "@/components/filters/RoutesFilter.vue";
 import { defineComponent } from "vue";
 
+type ITicketInfo = {
+  dateEnd: number;
+  dateStart: number;
+  destination: string;
+  duration: number;
+  origin: string;
+  stops: string[];
+}
 interface ITicket {
-  id: number;
+  companyId: string;
+  id: string;
+  info: ITicketInfo;
   price: string;
-  route: string;
-  time: string;
-  duration: string;
-  transfer: string[];
 }
 
 export default defineComponent({
@@ -21,33 +28,43 @@ export default defineComponent({
   data() {
     return {
       ticketCardsData: [] as ITicket[],
-      loader: false
+      companies: null,
+      showedTickets: [] as ITicket[],
+      loader: false,
+      howManyShowedTickets: 5
     };
   },
-
-  mounted() {
+  async mounted() {
     try {
       this.loader = true;
-      this.ticketCardsData = this.getTickets();
+      await this.$store.dispatch("moduleFilter/getCompanies");
+      await this.$store.dispatch("moduleFilter/getTickets");
+      this.ticketCardsData = this.$store.state.moduleFilter.tickets;
+      this.companies = this.$store.state.moduleFilter.companies;
+      this.showedTickets = this.ticketCardsData.slice(0, this.howManyShowedTickets);
     } catch (error) {
       console.log(error);
     } finally {
       this.loader = false;
     }
   },
-
   methods: {
-    getTickets(): ITicket[] {
-      return ticketStubFile?.tickets;
+    showMoreTickets() {
+      const oldValue: number = this.howManyShowedTickets;
+      const newValue: number = oldValue + 5;
+      const newTickets = (this.ticketCardsData.slice(oldValue, newValue));
+      this.showedTickets = [...this.showedTickets, ...newTickets]
+      this.howManyShowedTickets = newValue;
     }
   },
-
   components: {
     LogoIcon,
     TicketCard,
     PriorityFilter,
     TransferAmountFilter,
-    CompanyFilter
+    CompanyFilter,
+    DatesFilter,
+    RoutesFilter,
   }
 });
 </script>
@@ -58,6 +75,11 @@ export default defineComponent({
       <LogoIcon/>
     </header>
     <div class="wrapper">
+      <div class="content-header">
+        <RoutesFilter/>
+        <DatesFilter/>
+      </div>
+      <div class="separator"></div>
       <div class="content">
         <aside class="content__asside">
           <TransferAmountFilter/>
@@ -65,10 +87,12 @@ export default defineComponent({
         </aside>
         <main class="content__main">
           <PriorityFilter/>
-          <template v-if="ticketCardsData.length">
-            <TicketCard :card-data="card" v-for="card in ticketCardsData"/>
+          <template v-if="showedTickets">
+            <TicketCard :card-data="card"
+                        :key="card.id"
+                        v-for="card in showedTickets"/>
           </template>
-          <button class="button button--blue">ПОКАЗАТЬ ЕЩЁ 5 БИЛЕТОВ</button>
+          <button class="button button--blue" @click="showMoreTickets()">ПОКАЗАТЬ ЕЩЁ 5 БИЛЕТОВ</button>
         </main>
       </div>
     </div>
@@ -82,6 +106,11 @@ export default defineComponent({
     justify-content: center;
     align-items: center;
   }
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
   .container {
     width: 95%;
     max-width: 940px;
@@ -91,20 +120,31 @@ export default defineComponent({
     flex-direction: column;
     justify-content: center
   }
+  .separator {
+    border: 1px solid #DADADA;
+    margin-bottom: 25px;
+  }
+
+  .content-header {
+    display: grid;
+    grid-auto-columns: 1fr;
+    margin-bottom: 25px;
+    width: 100%;
+    grid-gap: 2px;
+  }
 
   .content {
-    display: flex;
+    display: grid;
+    width: 100%;
+    grid-auto-columns: 30% 70%;
 
     & .content__asside, .content__main {
       display: flex;
       flex-direction: column;
+      grid-row: 1;
     }
     & .content__asside {
       margin-right: 20px;
-    }
-
-    & .content__main {
-
     }
 
     .button {

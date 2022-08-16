@@ -52,6 +52,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
   .priority-filter-wrapper {
+    background-color: #fff;
     margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
