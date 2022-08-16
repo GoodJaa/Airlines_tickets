@@ -10,5 +10,5 @@ const app = createApp(App);
 
 app.use(store);
 app.use(router);
-
+app.config.globalProperties.$store = store;
 app.mount('#app');
