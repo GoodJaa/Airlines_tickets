@@ -54,8 +54,8 @@ export default defineComponent({
   .priority-filter-wrapper {
     background-color: #fff;
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-auto-columns: 1fr;
     border-radius: 5px;
     border: 1px solid #DFE5EC;
     overflow: hidden;
@@ -63,6 +63,8 @@ export default defineComponent({
     & .priority-filter__item {
       padding: 15px;
       cursor: pointer;
+      grid-row: 1;
+      text-align: center;
       &:hover {
         background-color: #F1FCFF;
       }

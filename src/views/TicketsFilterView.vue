@@ -1,74 +1,3 @@
-<script lang="ts">
-import LogoIcon from '@/components/icons/LogoIcon.vue';
-import TicketCard from '@/components/TicketCard.vue';
-import PriorityFilter from "@/components/filters/PriorityFilter.vue";
-import TransferAmountFilter from "@/components/filters/TransferAmountFilter.vue";
-import CompanyFilter from "@/components/filters/CompanyFilter.vue";
-import DatesFilter from "@/components/filters/DatesFilter.vue";
-import RoutesFilter from "@/components/filters/RoutesFilter.vue";
-import { defineComponent } from "vue";
-
-type ITicketInfo = {
-  dateEnd: number;
-  dateStart: number;
-  destination: string;
-  duration: number;
-  origin: string;
-  stops: string[];
-}
-interface ITicket {
-  companyId: string;
-  id: string;
-  info: ITicketInfo;
-  price: string;
-}
-
-export default defineComponent({
-  name: 'TicketsFilterView',
-  data() {
-    return {
-      ticketCardsData: [] as ITicket[],
-      companies: null,
-      showedTickets: [] as ITicket[],
-      loader: false,
-      howManyShowedTickets: 5
-    };
-  },
-  async mounted() {
-    try {
-      this.loader = true;
-      await this.$store.dispatch("moduleFilter/getCompanies");
-      await this.$store.dispatch("moduleFilter/getTickets");
-      this.ticketCardsData = this.$store.state.moduleFilter.tickets;
-      this.companies = this.$store.state.moduleFilter.companies;
-      this.showedTickets = this.ticketCardsData.slice(0, this.howManyShowedTickets);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.loader = false;
-    }
-  },
-  methods: {
-    showMoreTickets() {
-      const oldValue: number = this.howManyShowedTickets;
-      const newValue: number = oldValue + 5;
-      const newTickets = (this.ticketCardsData.slice(oldValue, newValue));
-      this.showedTickets = [...this.showedTickets, ...newTickets]
-      this.howManyShowedTickets = newValue;
-    }
-  },
-  components: {
-    LogoIcon,
-    TicketCard,
-    PriorityFilter,
-    TransferAmountFilter,
-    CompanyFilter,
-    DatesFilter,
-    RoutesFilter,
-  }
-});
-</script>
-
 <template>
   <div class="container">
     <header class="header">
@@ -87,8 +16,9 @@ export default defineComponent({
         </aside>
         <main class="content__main">
           <PriorityFilter/>
-          <template v-if="showedTickets">
+          <template v-if="!loader && !error && showedTickets.length">
             <TicketCard :card-data="card"
+                        :company="getCompanyById(card.companyId)"
                         :key="card.id"
                         v-for="card in showedTickets"/>
           </template>
@@ -98,6 +28,67 @@ export default defineComponent({
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import LogoIcon from '@/components/icons/LogoIcon.vue';
+import TicketCard from '@/components/TicketCard.vue';
+import PriorityFilter from "@/components/filters/PriorityFilter.vue";
+import TransferAmountFilter from "@/components/filters/TransferAmountFilter.vue";
+import CompanyFilter from "@/components/filters/CompanyFilter.vue";
+import DatesFilter from "@/components/filters/DatesFilter.vue";
+import RoutesFilter from "@/components/filters/RoutesFilter.vue";
+import { defineComponent } from "vue";
+
+export default defineComponent({
+  name: 'TicketsFilterView',
+  data() {
+    return {
+      ticketCardsData: [] as ITicket[],
+      companies: [] as ICompany[],
+      showedTickets: [] as ITicket[],
+      loader: false,
+      howManyShowedTickets: 5,
+      error: false
+    };
+  },
+  async mounted() {
+    try {
+      this.loader = true;
+      await this.$store.dispatch("moduleFilter/getCompanies");
+      await this.$store.dispatch("moduleFilter/getTickets");
+      this.ticketCardsData = this.$store.state.moduleFilter.tickets;
+      this.companies = this.$store.state.moduleFilter.companies;
+      this.showedTickets = this.ticketCardsData.slice(0, this.howManyShowedTickets);
+    } catch (error) {
+      console.log(error)
+      this.error = true;
+    } finally {
+      this.loader = false;
+    }
+  },
+  methods: {
+    showMoreTickets() {
+      const oldValue: number = this.howManyShowedTickets;
+      const newValue: number = oldValue + 5;
+      const newTickets = (this.ticketCardsData.slice(oldValue, newValue));
+      this.showedTickets = [...this.showedTickets, ...newTickets]
+      this.howManyShowedTickets = newValue;
+    },
+    getCompanyById(id: string): ICompany | void {
+      return this.companies.find(company => company.id === id);
+    }
+  },
+  components: {
+    LogoIcon,
+    TicketCard,
+    PriorityFilter,
+    TransferAmountFilter,
+    CompanyFilter,
+    DatesFilter,
+    RoutesFilter,
+  }
+});
+</script>
 
 <style lang="scss">
   .header {

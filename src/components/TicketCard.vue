@@ -2,7 +2,8 @@
   <div v-if="Object.keys(ticketCardData).length" class="ticket-card-wrapper">
     <div class="ticket-card-header">
       <div class="ticket-card__price">{{ticketCardData.price}} Р</div>
-      <S7AirlinesIcon/>
+      <img v-if="company.name === 'S7 Airlines'" src="../assets/icons/S7 Logo.png" alt="Company logo" width="110" height="36">
+      <img v-else-if="company.name === 'XiamenAir'" src="../assets/icons/XiamenAir Logo.png" alt="Company logo" width="110" height="36">
     </div>
     <div class="ticket-card-footer">
       <CardProperty>
@@ -25,28 +26,16 @@
 import { defineComponent } from "vue";
 import type { PropType } from "vue";
 import CardProperty from '@/components/CardProperty.vue';
-import S7AirlinesIcon from '@/components/icons/S7AirlinesIcon.vue';
-
-type ITicketInfo = {
-  dateEnd: number;
-  dateStart: number;
-  destination: string;
-  duration: number;
-  origin: string;
-  stops: string[];
-}
-interface ITicket {
-  companyId: string;
-  id: string;
-  info: ITicketInfo;
-  price: string;
-}
 
 export default defineComponent({
   name: "TicketCard",
   props: {
     cardData: {
       type: Object as PropType<ITicket>,
+      required: true
+    },
+    company: {
+      type: Object as PropType<ICompany>,
       required: true
     }
   },
@@ -100,8 +89,7 @@ export default defineComponent({
     }
   },
   components: {
-    CardProperty,
-    S7AirlinesIcon
+    CardProperty
   }
 });
 </script>
