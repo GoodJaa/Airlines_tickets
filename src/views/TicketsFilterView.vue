@@ -74,7 +74,7 @@ export default defineComponent({
       this.showedTickets = [...this.showedTickets, ...newTickets]
       this.howManyShowedTickets = newValue;
     },
-    getCompanyById(id: string): ICompany | void {
+    getCompanyById(id: string): ICompany | undefined {
       return this.companies.find(company => company.id === id);
     }
   },

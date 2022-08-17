@@ -2,8 +2,8 @@
   <div v-if="Object.keys(ticketCardData).length" class="ticket-card-wrapper">
     <div class="ticket-card-header">
       <div class="ticket-card__price">{{ticketCardData.price}} Р</div>
-      <img v-if="company.name === 'S7 Airlines'" src="../assets/icons/S7 Logo.png" alt="Company logo" width="110" height="36">
-      <img v-else-if="company.name === 'XiamenAir'" src="../assets/icons/XiamenAir Logo.png" alt="Company logo" width="110" height="36">
+      <img v-if="company?.name === 'S7 Airlines'" src="../assets/icons/S7Logo.png" alt="Company logo" width="110" height="36">
+      <img v-else-if="company?.name === 'XiamenAir'" src="../assets/icons/XiamenAirLogo.png" alt="Company logo" width="110" height="36">
     </div>
     <div class="ticket-card-footer">
       <CardProperty>
@@ -35,7 +35,7 @@ export default defineComponent({
       required: true
     },
     company: {
-      type: Object as PropType<ICompany>,
+      type: Object as PropType<ICompany | undefined>,
       required: true
     }
   },
