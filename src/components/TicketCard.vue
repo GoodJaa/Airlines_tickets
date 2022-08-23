@@ -2,8 +2,7 @@
   <div v-if="Object.keys(ticketCardData).length" class="ticket-card-wrapper">
     <div class="ticket-card-header">
       <div class="ticket-card__price">{{ticketCardData.price}} Р</div>
-      <img v-if="company?.name === 'S7 Airlines'" src="../assets/icons/S7Logo.png" alt="Company logo" width="110" height="36">
-      <img v-else-if="company?.name === 'XiamenAir'" src="../assets/icons/XiamenAirLogo.png" alt="Company logo" width="110" height="36">
+      <img :src="imagePath" alt="Company logo" width="110" height="36">
     </div>
     <div class="ticket-card-footer">
       <CardProperty>
@@ -48,21 +47,24 @@ export default defineComponent({
     this.ticketCardData = { ...this.cardData };
   },
   computed: {
+    imagePath(): string {
+      return new URL(`../assets/icons/${this.company?.name?.replace(/\s+/g, '')}.png`, import.meta.url).href
+    },
     getTransferCount(): string {
       const length = this.ticketCardData.info.stops?.length || null;
       let transferString;
       if (length) {
         if (length === 1) {
-          transferString = 'ПЕРЕСАДКА';
+          transferString = 'пересадка';
         } else if (1 < length && length < 5) {
-          transferString = 'ПЕРЕСАДКИ';
+          transferString = 'пересадки';
         } else {
-          transferString = 'ПЕРЕСАДОК';
+          transferString = 'пересадок';
         }
       } else {
-        transferString = 'БЕЗ ПЕРЕСАДОК';
+        transferString = 'без пересадок';
       }
-      return `${length ? length : ''} ${transferString}`;
+      return `${length ? length : ''} ${transferString}`.toUpperCase();
     },
     getFormatRouteTime(): string {
       if (this.ticketCardData?.info) {

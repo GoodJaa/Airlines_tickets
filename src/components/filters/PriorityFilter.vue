@@ -12,6 +12,7 @@
 
 <script lang="ts">
 import { defineComponent} from "vue";
+import { mapMutations } from "vuex";
 
 type IPriorityFilter = {
   id: number;
@@ -26,27 +27,41 @@ export default defineComponent({
       filters: [
         {
           id: 1,
-          text: 'САМЫЙ ДЕШЁВЫЙ',
-          isActive: true,
+          text: 'самый дешевый',
+          isActive: false,
         },
         {
           id: 2,
-          text: 'САМЫЙ БЫСТРЫЙ',
+          text: 'самый быстрый',
           isActive: false,
         },
         {
           id: 3,
-          text: 'ОПТИМАЛЬНЫЙ',
+          text: 'оптимальный',
           isActive: false,
         }
       ] as IPriorityFilter[]
     }
   },
+  mounted() {
+    this.filters.forEach(
+      item => item.isActive = item.id === this.$store.state.moduleFilter.activePriorityFilterId
+    );
+  },
   methods: {
+    ...mapMutations('moduleFilter', [
+      'setActivePriorityFilter',
+      'setShowedTickets'
+    ]),
     activatedFilter(filter: IPriorityFilter): void {
-      this.filters.forEach(item => item.isActive = filter.id === item.id ? true : false)
-    }
-  }
+      if (filter.isActive) {
+        return;
+      }
+      this.filters.forEach(item => item.isActive = filter.id === item.id);
+      this.setShowedTickets(5);
+      this.setActivePriorityFilter(filter.id);
+    },
+  },
 });
 </script>
 
@@ -61,10 +76,12 @@ export default defineComponent({
     overflow: hidden;
 
     & .priority-filter__item {
+      text-transform: uppercase;
       padding: 15px;
       cursor: pointer;
       grid-row: 1;
       text-align: center;
+      transition: .3s;
       &:hover {
         background-color: #F1FCFF;
       }

@@ -1,7 +1,7 @@
 <template>
   <div class="routes-filter-wrapper">
     <div class="filter-input-wrapper">
-      <ValueChangeButton class="routes-filter-change-button"/>
+      <ValueChangeButton class="routes-filter-change-button" @click="changeValue"/>
       <input type="text" v-model="from"
              class="filter-input filter-input--before-value-change-button"
              placeholder="Откуда">
@@ -22,6 +22,11 @@ export default defineComponent({
     return {
       from: '',
       to: ''
+    }
+  },
+  methods: {
+    changeValue() {
+      [this.from, this.to] = [this.to, this.from];
     }
   },
   components: {

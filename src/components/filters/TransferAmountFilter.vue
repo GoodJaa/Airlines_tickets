@@ -1,6 +1,6 @@
 <template>
   <div class="transfer-amount-filter-wrapper">
-    <div class="transfer-amount-filter-header">КОЛИЧЕСТВО ПЕРЕСАДОК</div>
+    <div class="transfer-amount-filter-header">количество пересадок</div>
     <label class="checkbox-wrapper"
            v-for="filter in filters">
       <input class="checkbox"
@@ -57,6 +57,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
   .transfer-amount-filter-header {
+    text-transform: uppercase;
     padding: 0 20px;
     margin-bottom: 20px;
     font-size: 12px;
@@ -73,7 +74,6 @@ export default defineComponent({
     margin-bottom: 20px;
 
     .checkbox-wrapper {
-      min-width: 227px;
       display: flex;
       position: relative;
       cursor: pointer;
@@ -86,7 +86,7 @@ export default defineComponent({
       line-height: 20px;
       color: #4A4A4A;
       padding: 10px 20px;
-
+      transition: .3s;
       &:hover {
         background-color: #F1FCFF;
       }

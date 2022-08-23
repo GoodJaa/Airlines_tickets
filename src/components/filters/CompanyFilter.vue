@@ -1,6 +1,6 @@
 <template>
   <div class="company-filter-wrapper">
-    <div class="company-filter-header">КОМПАНИЯ</div>
+    <div class="company-filter-header">компания</div>
     <label class="radio-wrapper"
            :key="filter.id"
            v-for="filter in filters">
@@ -48,6 +48,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .company-filter-header {
+  text-transform: uppercase;
   padding: 0 20px;
   margin-bottom: 20px;
   font-size: 12px;
@@ -63,7 +64,6 @@ export default defineComponent({
   justify-content: flex-start;
 
   .radio-wrapper {
-    min-width: 227px;
     display: flex;
     position: relative;
     cursor: pointer;
@@ -76,6 +76,7 @@ export default defineComponent({
     line-height: 20px;
     color: #4A4A4A;
     padding: 10px 20px;
+    transition: .3s;
 
     &:hover {
       background-color: #F1FCFF;

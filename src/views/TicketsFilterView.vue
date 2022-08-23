@@ -16,13 +16,16 @@
         </aside>
         <main class="content__main">
           <PriorityFilter/>
-          <template v-if="!loader && !error && showedTickets.length">
+          <div class="loader-wrapper" v-if="loader">
+            <SpinnerLoader/>
+          </div>
+          <template v-if="!loader && !error && ticketsSort.length">
             <TicketCard :card-data="card"
                         :company="getCompanyById(card.companyId)"
                         :key="card.id"
-                        v-for="card in showedTickets"/>
+                        v-for="card in ticketsSort"/>
+            <button class="button button--blue" @click="showMoreTickets()">показать ещё 5 билетов</button>
           </template>
-          <button class="button button--blue" @click="showMoreTickets()">ПОКАЗАТЬ ЕЩЁ 5 БИЛЕТОВ</button>
         </main>
       </div>
     </div>
@@ -37,7 +40,9 @@ import TransferAmountFilter from "@/components/filters/TransferAmountFilter.vue"
 import CompanyFilter from "@/components/filters/CompanyFilter.vue";
 import DatesFilter from "@/components/filters/DatesFilter.vue";
 import RoutesFilter from "@/components/filters/RoutesFilter.vue";
+import SpinnerLoader from "@/components/SpinnerLoader.vue";
 import { defineComponent } from "vue";
+import { mapGetters, mapActions, mapMutations } from 'vuex';
 
 export default defineComponent({
   name: 'TicketsFilterView',
@@ -47,32 +52,36 @@ export default defineComponent({
       companies: [] as ICompany[],
       showedTickets: [] as ITicket[],
       loader: false,
-      howManyShowedTickets: 5,
       error: false
     };
   },
   async mounted() {
     try {
       this.loader = true;
-      await this.$store.dispatch("moduleFilter/getCompanies");
-      await this.$store.dispatch("moduleFilter/getTickets");
-      this.ticketCardsData = this.$store.state.moduleFilter.tickets;
+      await this.getCompanies();
+      await this.getTickets();
       this.companies = this.$store.state.moduleFilter.companies;
-      this.showedTickets = this.ticketCardsData.slice(0, this.howManyShowedTickets);
     } catch (error) {
-      console.log(error)
       this.error = true;
     } finally {
       this.loader = false;
     }
   },
+  computed: {
+    ...mapGetters('moduleFilter', [
+      'ticketsSort',
+    ]),
+  },
   methods: {
-    showMoreTickets() {
-      const oldValue: number = this.howManyShowedTickets;
-      const newValue: number = oldValue + 5;
-      const newTickets = (this.ticketCardsData.slice(oldValue, newValue));
-      this.showedTickets = [...this.showedTickets, ...newTickets]
-      this.howManyShowedTickets = newValue;
+    ...mapActions('moduleFilter', [
+        'getCompanies',
+        'getTickets'
+      ]),
+    ...mapMutations('moduleFilter', [
+      'setShowedTickets'
+    ]),
+    showMoreTickets(): void {
+      this.setShowedTickets(this.$store.state.moduleFilter.howManyShowedTickets + 5);
     },
     getCompanyById(id: string): ICompany | undefined {
       return this.companies.find(company => company.id === id);
@@ -86,6 +95,7 @@ export default defineComponent({
     CompanyFilter,
     DatesFilter,
     RoutesFilter,
+    SpinnerLoader
   }
 });
 </script>
@@ -129,6 +139,12 @@ export default defineComponent({
     width: 100%;
     grid-auto-columns: 30% 70%;
 
+    & .loader-wrapper {
+      width: 100%;
+      display: flex;
+      justify-content: center;align-items: center;
+    }
+
     & .content__asside, .content__main {
       display: flex;
       flex-direction: column;
@@ -142,6 +158,10 @@ export default defineComponent({
       &.button--blue {
         color: #fff;
         background-color: #2196F3;
+        &:hover {
+          background-color: #fff;
+          color: #2196F3;
+        }
       }
     }
   }

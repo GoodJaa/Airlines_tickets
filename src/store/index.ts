@@ -1,11 +1,22 @@
 import { createStore } from 'vuex';
 import axios from "axios";
 
+enum EPriorityFilters {
+  Optimal = 3,
+  Quick = 2,
+  Cheap = 1
+}
+// change to default
+const DEFAULT_SORT = EPriorityFilters.Optimal;
+
 const moduleFilter = {
   namespaced: true,
   state: {
     companies: [] as ICompany[],
-    tickets: [] as ITicket[]
+    tickets: [] as ITicket[],
+    filteredTickets: [] as ITicket[],
+    activePriorityFilterId: DEFAULT_SORT,
+    howManyShowedTickets: 5,
   },
   mutations: {
     setCompanies: (state: any, companies: ICompany[]): void => {
@@ -13,6 +24,12 @@ const moduleFilter = {
     },
     setTickets: (state: any, tickets: ITicket[]): void => {
       state.tickets = [...tickets];
+    },
+    setActivePriorityFilter: (state: any, id: number): void => {
+      state.activePriorityFilterId = id;
+    },
+    setShowedTickets: (state: any, count: number): void => {
+      state.howManyShowedTickets = count;
     }
   },
   actions: {
@@ -30,6 +47,24 @@ const moduleFilter = {
           context.commit('setTickets', response.data)
         });
     }
+  },
+  getters: {
+    ticketsSort: (state: any) => {
+      const tickets: ITicket[] = [...state.tickets]
+        .sort((a: ITicket, b: ITicket): number => {
+          switch (EPriorityFilters[state.activePriorityFilterId]) {
+            case 'Optimal':
+              return a.info.stops.length - b.info.stops.length;
+            case 'Cheap':
+              return +a.price - +b.price;
+            case 'Quick':
+              return a.info.duration - b.info.duration;
+            default:
+              return 0
+          }
+        })
+      return tickets.slice(0, state.howManyShowedTickets);
+    },
   }
 }
 

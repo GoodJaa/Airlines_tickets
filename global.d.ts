@@ -12,7 +12,7 @@ interface ITicket {
     info: ITicketInfo;
     price: string;
 }
-type ICompany = {
+interface ICompany {
     id: string;
     logo: string;
     name: string;
