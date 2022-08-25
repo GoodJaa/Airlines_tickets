@@ -42,15 +42,17 @@ export default defineComponent({
     lowerLimitDatesStart(): Date {
       return new Date(Date.now() - 8640000)
     },
-    upperLimitDatesStart(): Date | undefined {
+    upperLimitDatesStart(): Date | null {
       if (this.back) {
         return new Date(this.back)
       }
+      return null
     },
-    lowerLimitDatesEnd(): Date | undefined {
+    lowerLimitDatesEnd(): Date | null {
       if (this.when) {
         return new Date(this.when)
       }
+      return null
     }
   },
   watch: {
