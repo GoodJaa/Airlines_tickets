@@ -60,7 +60,7 @@ export default defineComponent({
       this.filters.forEach(item => item.isActive = filter.id === item.id);
       this.setShowedTickets(5);
       this.setActivePriorityFilter(filter.id);
-    },
+    }
   },
 });
 </script>

@@ -6,6 +6,7 @@
       <input class="checkbox"
              type="checkbox"
              :checked="filter.isChecked"
+             @change="applyTransferAmountFilter(checkedFilters)"
              v-model="checkedFilters"
              :value="filter.id"/>
       <div class="checkmark"></div>
@@ -16,6 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { mapMutations } from "vuex";
 
 type ITransferAmountFilter = {
   id: number;
@@ -29,28 +31,33 @@ export default defineComponent({
     return {
       filters: [
         {
-          id: 1,
+          id: 0,
           name: 'Без пересадок',
           isChecked: false
         },
         {
-          id: 2,
+          id: 1,
           name: '1 пересадка',
           isChecked: false
         },
         {
-          id: 3,
+          id: 2,
           name: '2 пересадки',
           isChecked: false
         },
         {
-          id: 4,
+          id: 3,
           name: '3 пересадки',
           isChecked: false
         }
       ] as ITransferAmountFilter[],
       checkedFilters: [],
     }
+  },
+  methods: {
+    ...mapMutations('moduleFilter', [
+      'applyTransferAmountFilter'
+    ])
   }
 });
 </script>

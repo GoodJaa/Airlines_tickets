@@ -17,3 +17,22 @@ interface ICompany {
     logo: string;
     name: string;
 }
+enum EPriorityFilters {
+    Optimal = 3,
+    Quick = 2,
+    Cheap = 1
+}
+enum ECityCOdes {
+    MOW,
+    HKT,
+    HKG,
+    JNB,
+    PTB,
+    ARH,
+    TRN,
+    KRS,
+    SRT,
+    LOS,
+    EKV,
+    EKT
+}

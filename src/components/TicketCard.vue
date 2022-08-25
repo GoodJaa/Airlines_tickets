@@ -72,6 +72,8 @@ export default defineComponent({
         const end: {[key: string]: number | string} = this.formatTime(this.ticketCardData.info?.dateEnd);
         start.hours = start.hours < 10 ? `0${start.hours}` : start.hours;
         end.hours = end.hours < 10 ? `0${end.hours}` : end.hours;
+        start.mins = start.mins < 10 ? `0${start.mins}` : start.mins;
+        end.mins = end.mins < 10 ? `0${end.mins}` : end.mins;
         return `${start.hours}:${start.mins} - ${end.hours}:${end.mins}`
       }
       return ''

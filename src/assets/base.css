@@ -116,3 +116,9 @@ select {
   font-size: 15px;
   line-height: 20px;
 }
+
+.error-hint {
+  padding: 8px 0;
+  color: #ff7e6c;
+  font-size: 14px;
+}

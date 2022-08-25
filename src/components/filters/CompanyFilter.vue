@@ -6,8 +6,9 @@
            v-for="filter in filters">
       <input class="radio"
              type="radio"
+             v-model="checkedFilter"
              :value="filter.id"
-             v-model="checkedFilter"/>
+             @change="applyCompanyFilter(filter.id)"/>
       <div class="checkmark"></div>
       <div>{{filter.name}}</div>
     </label>
@@ -16,33 +17,49 @@
 
 <script lang="ts">
 import {defineComponent} from "vue";
+import type { PropType } from "vue";
+import {mapMutations} from "vuex";
 
 type ICompanyFilter = {
-  id: number;
+  id: string;
   name: string;
 }
 
 export default defineComponent({
   name: "CompanyFilter",
+  props: {
+    companies: {
+      type: [] as PropType<ICompany[]>,
+      required: true
+    }
+  },
   data() {
     return {
       filters: [
         {
-          id: 1,
-          name: 'Все'
+          id: '1',
+          name: 'Все',
         },
-        {
-          id: 2,
-          name: 'S7 Airlines'
-        },
-        {
-          id: 3,
-          name: 'XiamenAir'
-        }
+
       ] as ICompanyFilter[],
-      checkedFilter: null
+      checkedFilter: this.$store.state.moduleFilter.filters.companyFilter.value,
     }
   },
+  mounted() {
+    for (const company of this.companies) {
+      this.filters.push(
+        {
+          id: company.id,
+          name: company.name
+        }
+      )
+    }
+  },
+  methods: {
+    ...mapMutations('moduleFilter', [
+      'applyCompanyFilter'
+    ])
+  }
 });
 </script>
 

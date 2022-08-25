@@ -12,19 +12,21 @@
       <div class="content">
         <aside class="content__asside">
           <TransferAmountFilter/>
-          <CompanyFilter/>
+          <CompanyFilter v-if="companies?.length" :companies="companies"/>
         </aside>
         <main class="content__main">
           <PriorityFilter/>
           <div class="loader-wrapper" v-if="loader">
             <SpinnerLoader/>
           </div>
-          <template v-if="!loader && !error && ticketsSort.length">
+          <template v-if="!loader && !error && filteredTickets?.length">
             <TicketCard :card-data="card"
                         :company="getCompanyById(card.companyId)"
                         :key="card.id"
-                        v-for="card in ticketsSort"/>
-            <button class="button button--blue" @click="showMoreTickets()">показать ещё 5 билетов</button>
+                        v-for="card in filteredTickets"/>
+            <button v-if="isPossibleShowMore"
+                    class="button button--blue"
+                    @click="showMoreTickets()">показать ещё 5 билетов</button>
           </template>
         </main>
       </div>
@@ -42,13 +44,12 @@ import DatesFilter from "@/components/filters/DatesFilter.vue";
 import RoutesFilter from "@/components/filters/RoutesFilter.vue";
 import SpinnerLoader from "@/components/SpinnerLoader.vue";
 import { defineComponent } from "vue";
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapActions, mapMutations, mapState } from "vuex";
 
 export default defineComponent({
   name: 'TicketsFilterView',
   data() {
     return {
-      ticketCardsData: [] as ITicket[],
       companies: [] as ICompany[],
       showedTickets: [] as ITicket[],
       loader: false,
@@ -62,6 +63,7 @@ export default defineComponent({
       await this.getTickets();
       this.companies = this.$store.state.moduleFilter.companies;
     } catch (error) {
+      console.log(error)
       this.error = true;
     } finally {
       this.loader = false;
@@ -69,8 +71,11 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters('moduleFilter', [
-      'ticketsSort',
+      'filteredTickets'
     ]),
+    isPossibleShowMore(): boolean {
+      return (this.filteredTickets?.length - this.$store.state.moduleFilter.howManyShowedTickets) === 0
+    }
   },
   methods: {
     ...mapActions('moduleFilter', [
