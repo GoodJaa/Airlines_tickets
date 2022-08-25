@@ -19,25 +19,28 @@ enum ECompanyFilterAll {
 const DEFAULT_SORT = EPriorityFilters.Optimal;
 
 function companyFilterMethod(ticket: ITicket, filter: IFilter): boolean {
-  return filter.value === ECompanyFilterAll["All"] || ticket[filter.param] === filter.value
+  return filter.value === ECompanyFilterAll["All"] || ticket[filter.param as keyof typeof ticket] === filter.value
 }
 
 function dateFilterMethod(ticket: ITicket, filter: IFilter): boolean {
-  const ticketDate: Date = new Date(+ticket.info[filter.param]);
+  const ticketDate: Date = new Date(+ticket.info[filter.param as keyof typeof ticket.info]);
   const filterDate: Date = new Date(+filter.value)
   return ticketDate.getFullYear() === filterDate.getFullYear() &&
     ticketDate.getMonth() === filterDate.getMonth() &&
     ticketDate.getDate() === filterDate.getDate()
 }
 
-function transferAmountFilterMethod(ticket: ITicket, filter: IFilter): boolean {
+function transferAmountFilterMethod(ticket: ITicket, filter: IFilter): boolean | undefined {
   if (Array.isArray(filter.value)) {
+    const stops = ticket.info[filter.param as keyof typeof ticket.info];
     if (!filter.value.length) {
       return true;
     } else {
       for (const value of filter.value) {
-        if (+value === ticket.info[filter.param].length) {
-          return true
+        if (Array.isArray(stops)) {
+          if (+value === stops.length) {
+            return true
+          }
         }
       }
     }
@@ -46,7 +49,7 @@ function transferAmountFilterMethod(ticket: ITicket, filter: IFilter): boolean {
 }
 
 function commonFilterMethod(ticket: ITicket, filter: IFilter): boolean {
-  return ticket.info[filter.param] === filter.value;
+  return ticket.info[filter.param as keyof typeof ticket.info] === filter.value;
 }
 
 const moduleFilter = {
