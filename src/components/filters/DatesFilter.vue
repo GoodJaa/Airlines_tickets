@@ -28,8 +28,8 @@ export default defineComponent({
   name: "DatesFilter",
   data() {
     return {
-      when: null,
-      back: null,
+      when: undefined,
+      back: undefined,
     }
   },
   methods: {
@@ -42,17 +42,15 @@ export default defineComponent({
     lowerLimitDatesStart(): Date {
       return new Date(Date.now() - 8640000)
     },
-    upperLimitDatesStart(): Date | null {
+    upperLimitDatesStart(): Date | undefined {
       if (this.back) {
         return new Date(this.back)
       }
-      return null
     },
-    lowerLimitDatesEnd(): Date | null {
+    lowerLimitDatesEnd(): Date | undefined {
       if (this.when) {
         return new Date(this.when)
       }
-      return null
     }
   },
   watch: {
