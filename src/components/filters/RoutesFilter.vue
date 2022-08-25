@@ -67,6 +67,8 @@ export default defineComponent({
     ]),
     changeValue() {
       [this.from, this.to] = [this.to, this.from];
+      this.applyRouteStartFilter(this.from);
+      this.applyRouteEndFilter(this.to);
     },
     activeDropdown(filter: string): void {
       this.isActiveFromDropdown = filter === 'from';
